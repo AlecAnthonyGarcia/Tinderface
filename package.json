@@ -1,11 +1,11 @@
 {
-  "name": "materialui-express-boilerplate",
-  "author": "Cory Forward",
-  "version": "0.1.1",
-  "description": "Boilerplate for Express applications that use React, and more specifically the Material-UI library",
+  "name": "tinderface",
+  "author": "Alec Garcia",
+  "version": "1.0.0",
+  "description": "Make Tinder Facebook-friendly again!",
   "repository": {
     "type": "git",
-    "url": "https://github.com/c4wrd/materialui-express-boilerplate"
+    "url": "https://github.com/CaliAlec/Tinderface"
   },
   "scripts": {
     "test": "webpack-dev-server --config webpack-dev-server.config.js --progress --inline --colors",
@@ -18,6 +18,7 @@
     "babel-preset-es2015": "^6.3.13",
     "babel-preset-react": "^6.3.13",
     "babel-runtime": "^6.3.19",
+    "ejs": "^2.5.1",
     "eslint": "^1.10.3",
     "eslint-loader": "^1.1.1",
     "eslint-plugin-react": "^3.13.1",
@@ -26,12 +27,15 @@
     "hbs": "^4.0.0",
     "html-webpack-plugin": "^2.7.2",
     "http": "0.0.0",
-    "material-ui": "^0.14.4",
-    "react": "^0.14.3",
-    "react-dom": "^0.14.3",
+    "jquery": "^3.1.0",
+    "material-ui": "^0.15.2",
+    "moment": "^2.14.1",
+    "react": "^15.0.1",
+    "react-dom": "^15.0.1",
     "react-hot-loader": "^1.3.0",
     "react-router": "^2.0.0",
     "react-tap-event-plugin": "^0.2.1",
+    "request": "^2.74.0",
     "socket.io": "^1.4.5",
     "transfer-webpack-plugin": "^0.1.4",
     "webpack": "^1.12.9",
