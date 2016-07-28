@@ -1,6 +1,10 @@
 import React from 'react';
 import {List, ListItem} from 'material-ui/List';
+import Chip from 'material-ui/Chip';
 import TinderFriendCard from './TinderFriendCard';
+import Avatar from 'material-ui/Avatar';
+import SyncIcon from 'material-ui/svg-icons/notification/sync';
+import BadMoodIcon from 'material-ui/svg-icons/social/mood-bad';
 
 const styles = {
   tinderFriendList: {
@@ -18,7 +22,9 @@ class TinderFriendList extends React.Component {
     super(props, context);
     
     this.state = {
-      tinderFriendArray: []
+      tinderFriendArray: [],
+      isLoading: true,
+      loadingText: 'Loading...'
     };
   }
   
@@ -41,7 +47,14 @@ class TinderFriendList extends React.Component {
           if(response.error) {
             console.log('Invalid Facebook Access Token.');
           } else {
-            itself.setState({tinderFriendArray: response.results});
+            if(response.results.length === 0) {
+              itself.setState({loadingText: 'You have no FB friends who are on Tinder.'});
+            } else {
+              itself.setState({
+                tinderFriendArray: response.results,
+                isLoading: false
+              });
+            }
           }
         } else {
           console.log('Error requesting Tinder Facebook friends.');
@@ -72,6 +85,17 @@ class TinderFriendList extends React.Component {
             text={card.text}
             />
         ))}
+        
+        {this.state.isLoading ?
+          <Chip style={{marginLeft: 'auto', marginRight: 'auto'}} >
+            {this.state.loadingText === 'Loading...' ?
+              <Avatar color="#444" icon={<SyncIcon />} />
+              : <Avatar color="#444" icon={<BadMoodIcon />} />
+          }
+          {this.state.loadingText}
+        </Chip>
+        : ''
+      }
         
       </List>
     );
