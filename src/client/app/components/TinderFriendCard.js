@@ -142,7 +142,7 @@ class TinderFriendCard extends React.Component {
           expandable={true}
           onClick={this.showImageGallery.bind(this)}
           >
-          <img src={profileImage}/>
+          <img style={{cursor: 'pointer'}} src={profileImage}/>
         </CardMedia>
         <CardTitle 
           title={headerTitle.split(' ')[0] + ", " + moment().diff(this.state.tinderUserObject.birth_date, 'years')}
