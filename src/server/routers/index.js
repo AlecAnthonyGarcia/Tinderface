@@ -33,4 +33,39 @@ app.post('/auth', upload.array(), function (req, res) {
   });
 });
 
+// retrieve Tinder Facebook friends who are opted-in to Tinder Social
+app.post('/friends', upload.array(), function (req, res) {
+  request({
+    url: TINDER_API + "/group/friends",
+    method: "GET",
+    headers: {
+      "User-Agent": "Tinder/5.3.1 (iPhone; iOS 9.3.3; Scale/2.00)",
+      "X-Auth-Token": req.body.tinderAuthToken
+    },
+  }, function (error, response, body){
+    res.send(body);
+  });
+});
+
+// retrieve Tinder profile information for the requested user
+app.post('/user', upload.array(), function (req, res) {
+  var userUrl = TINDER_API + "/user/" + req.body.tinderUserId;
+  var method = "GET";
+  if(req.body.share) {
+    userUrl = userUrl + '/share';
+    method = "POST";
+  }
+  request({
+    url: userUrl,
+    method: method,
+    headers: {
+      "User-Agent": "Tinder/5.3.1 (iPhone; iOS 9.3.3; Scale/2.00)",
+      "X-Auth-Token": req.body.tinderAuthToken
+    },
+  }, function (error, response, body){
+    res.send(body);
+  });
+});
+
+
 module.exports = app;
