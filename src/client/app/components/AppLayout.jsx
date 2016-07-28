@@ -391,6 +391,14 @@ class Main extends Component {
                 targetOrigin={{horizontal: 'left', vertical: 'top'}}
                 >
                 <MenuItem
+                  primaryText="About"
+                  onTouchTap={this.openAboutDialog.bind(this)}
+                  />
+                <MenuItem
+                  primaryText="View Source"
+                  onTouchTap={() => window.open('https://github.com/CaliAlec/Tinderface')}
+                  />
+                <MenuItem
                   primaryText="Logout"
                   onTouchTap={this.logout.bind(this)}
                   />
