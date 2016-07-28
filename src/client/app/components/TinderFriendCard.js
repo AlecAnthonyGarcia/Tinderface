@@ -123,6 +123,11 @@ class TinderFriendCard extends React.Component {
       infoRoute
     } = this.props;
     
+    var profileImage = image;
+    if(Object.keys(this.state.tinderUserObject).length > 0) {
+      profileImage = this.state.tinderUserObject.photos[0]["processedFiles"][0]["url"];
+    }
+    
     return (
       <Card onExpandChange={this.handleExpandChange.bind(this)}>
         <CardHeader
@@ -137,7 +142,7 @@ class TinderFriendCard extends React.Component {
           expandable={true}
           onClick={this.showImageGallery.bind(this)}
           >
-          <img src={image}/>
+          <img src={profileImage}/>
         </CardMedia>
         <CardTitle 
           title={headerTitle.split(' ')[0] + ", " + moment().diff(this.state.tinderUserObject.birth_date, 'years')}
