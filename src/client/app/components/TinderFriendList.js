@@ -43,7 +43,14 @@ class TinderFriendList extends React.Component {
     xhr.onreadystatechange = function() {
       if (xhr.readyState == XMLHttpRequest.DONE) {
         if(xhr.status == 200) {
-          var response = JSON.parse(xhr.responseText);
+            var responseText = xhr.responseText;
+            if(responseText === 'Unauthorized') {
+              // Return to login page because Tinder auth token expired
+              localStorage.removeItem('tinderAuthToken');
+              location.reload();
+              return;
+            }
+          var response = JSON.parse(responseText);
           if(response.error) {
             console.log('Invalid Facebook Access Token.');
           } else {
