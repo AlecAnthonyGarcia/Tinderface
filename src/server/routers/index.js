@@ -67,5 +67,37 @@ app.post('/user', upload.array(), function (req, res) {
   });
 });
 
+// retrieve Tinder user information
+app.post('/meta', upload.array(), function (req, res) {
+  request({
+    url: TINDER_API + "/meta",
+    method: "GET",
+    headers: {
+      "User-Agent": "Tinder/5.3.1 (iPhone; iOS 9.3.3; Scale/2.00)",
+      "X-Auth-Token": req.body.tinderAuthToken
+    },
+  }, function (error, response, body){
+    res.send(body);
+  });
+});
+
+// update Tinder Social group status
+app.post('/group/status', upload.array(), function (req, res) {
+  var requestBody = {
+    status: req.body.status
+  };
+  request({
+    url: TINDER_API + "/group/" + req.body.groupId,
+    method: "PUT",
+    json: true,
+    headers: {
+      "User-Agent": "Tinder/5.3.1 (iPhone; iOS 9.3.3; Scale/2.00)",
+      "X-Auth-Token": req.body.tinderAuthToken
+    },
+    body: requestBody
+  }, function (error, response, body){
+    res.send(body);
+  });
+});
 
 module.exports = app;
