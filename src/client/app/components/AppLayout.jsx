@@ -13,6 +13,10 @@ import IconButton from 'material-ui/IconButton/IconButton';
 import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
 import TinderFriendList from './TinderFriendList';
 
+const FACEBOOK_AUTH_DIALOG_URL = "https://www.facebook.com/v2.6/dialog/oauth?redirect_uri=fb464891386855067%3A%2F%2Fauthorize%2F&" +
+"scope=user_birthday,user_photos,user_education_history,email,user_relationship_details,user_friends,user_work_history,user_likes&" +
+"response_type=token%2Csigned_request&client_id=464891386855067";
+
 const styles = {
   container: {
     fontFamily: 'proxima-nova-soft, proxima-nova, Helvetica Neue, helvetica, sans-serif'
@@ -122,8 +126,6 @@ class Main extends Component {
       aboutDialogOpen: false,
       tinderAuthDialogOpen: false,
       tinderAuthDialogErrorText: '',
-      facebookAccessTokenDialogOpen: false,
-      facebookAccessTokenDialogErrorText: '',
       isAuthenticated: false,
       facebookAccessToken: ''
     };
@@ -159,20 +161,8 @@ class Main extends Component {
       tinderAuthDialogOpen: true,
     });
   }
-  
-  handleFacebookAccessTokenRequestClose() {
-    this.setState({
-      facebookAccessTokenDialogOpen: false,
-    });
-  }
-  
-  openFacebookAccessTokenDialog() {
-    this.setState({
-      facebookAccessTokenDialogOpen: true,
-    });
-  }
-  
-  getTinderAuthToken() {
+
+  getTinderAuthToken(fbAuthToken) {
     var itself = this;
     var xhr = new XMLHttpRequest();
     
@@ -194,7 +184,7 @@ class Main extends Component {
     }
     
     var formData = new FormData();
-    formData.append("facebookAccessToken", this.state.facebookAccessToken);
+    formData.append("facebookAccessToken", fbAuthToken);
     
     // make internal server request to get auth token from Tinder's API
     xhr.open("POST", './auth', true);
@@ -203,15 +193,16 @@ class Main extends Component {
   }
   
   parseFacebookAccessToken() {
-    var fbAccessToken = this.state.facebookAccessToken.match(/#access_token=(.+)&/);
-    if(fbAccessToken && fbAccessToken[1]) {
-      this.setState({
-        facebookAccessToken: fbAccessToken[1],
-        facebookAccessTokenDialogErrorText: ''
-      });
-      this.handleFacebookAccessTokenRequestClose();
+    if(this.state.facebookAccessToken.includes("access_token")) {
+      var fbAccessToken = this.state.facebookAccessToken.match(/access_token=(.+)&/);
+      if(fbAccessToken && fbAccessToken[1]) {
+        this.setState({facebookAccessToken: fbAccessToken[1]});
+        this.getTinderAuthToken(fbAccessToken[1]);
+      } else {
+        this.setState({tinderAuthDialogErrorText: 'There was a problem parsing your Facebook Access Token.'});
+      }
     } else {
-      this.setState({facebookAccessTokenDialogErrorText: 'There was a problem parsing your Facebook Access Token.'});
+      this.getTinderAuthToken(this.state.facebookAccessToken);
     }
   }
   
@@ -239,20 +230,6 @@ class Main extends Component {
         label="Submit"
         primary={true}
         disabled={false}
-        onTouchTap={this.getTinderAuthToken.bind(this)}
-        />
-    ];
-    
-    const facebookAccessTokenDialogActions = [
-      <FlatButton
-        label="Cancel"
-        primary={true}
-        onTouchTap={this.handleFacebookAccessTokenRequestClose.bind(this)}
-        />,
-      <FlatButton
-        label="PARSE FB TOKEN"
-        primary={true}
-        disabled={false}
         onTouchTap={this.parseFacebookAccessToken.bind(this)}
         />
     ];
@@ -262,61 +239,56 @@ class Main extends Component {
         <div style={styles.container}>
           <Dialog
             open={this.state.tinderAuthDialogOpen}
-            title="Login to Tinder with Facebook"
+            title="Login to Tinder with Facebook Access Token"
             actions={tinderAuthDialogActions}
             onRequestClose={this.handleTinderAuthDialogRequestClose.bind(this)}
             autoScrollBodyContent={true}
             >
+            
+            <br />
+            Read the steps below before following them to obtain your Facebook Access Token.
+            <br /><br />
+            
+            <h1>Step 1</h1>
+            <h4>Click the button below to open the auth dialog and login to Facebook if you are not already.</h4>
+
+            <RaisedButton
+              label="OPEN FB AUTH DIALOG"
+              primary={true}
+              onTouchTap={() => window.open(FACEBOOK_AUTH_DIALOG_URL, "Facebook", true)}
+              />
+            
+            <h1>Step 2</h1>
+            
+            <h4>You will see a dialog that says you have already authorized Tinder.</h4>
+            <h4>At this point, open your browser’s developer tools. (Cmd + Option + I on Mac) or (F12, Ctrl + Shift + I on Windows) or right click the page anywhere and select 'Inspect'.</h4>
+            <h4>Switch to the 'Network' tab in your developer tools window. Your dev tools window should look like the image below.</h4>
+            
+            <img src={'fb-auth-window.png'} style={{width: '100%'}} />    
+
+            <h1>Step 3</h1>
+            
+            <h4>Press the 'Okay' button on the Tinder dialog, and you will see some activity in the Network tab.</h4>
+            <h4>In the Network tab, locate the new 'confirm?dpr=2' entry, and right click it.</h4>
+            <h4>Select the 'Copy Response' option from the context menu like in the image below.</h4>
+            
+            <img src={'dev-tools-window.png'} style={{width: '500px'}} />
+            
+            <h1>Step 4</h1>
+            <h4>After copying the response, paste it into the text field below, press the 'Submit' button, and your FB access token will be parsed from the response. We will then fetch
+              your Tinder auth token and log you in to Tinder.</h4>
+            
             <TextField 
               ref="fbAccessToken"
-              floatingLabelText="Facebook Access Token"
+              floatingLabelText="Paste Facebook Auth Response"
               style={{width: '100%'}}
               errorText={this.state.tinderAuthDialogErrorText}
               value={this.state.facebookAccessToken}
               onChange={() => this.setState({facebookAccessToken: this.refs.fbAccessToken.getValue()})}
               />
-            <FlatButton
-              label="Get FB token"
-              onTouchTap={this.openFacebookAccessTokenDialog.bind(this)}
-              />
-          </Dialog>
-          
-          <Dialog
-            open={this.state.facebookAccessTokenDialogOpen}
-            title="How do I get my Facebook Access Token?"
-            actions={facebookAccessTokenDialogActions}
-            onRequestClose={this.handleFacebookAccessTokenRequestClose.bind(this)}
-            autoScrollBodyContent={true}
-            >
-            The easiest way to get your Facebook Access Token is by copying a URL from a popup window. Click the button below and then
-            QUICKLY copy the URL of the new window before the URL changes. Once you see the URL change from a long URL to a short one,
-            you are free to close the popup.
-            <br /><br />
-            
-            <FlatButton style={{width: '100%'}}
-              label="Open window with FB Token"
-              onTouchTap={() =>
-                window.open('https://www.facebook.com/dialog/oauth?client_id=464891386855067' + 
-                '&redirect_uri=https://www.facebook.com/connect/login_success.html' +
-                '&scope=basic_info,email,public_profile,user_about_me,user_activities,user_birthday,' + 
-                'user_education_history,user_friends,user_interests,user_likes,user_location,user_photos,' +
-                'user_relationship_details&response_type=token', 'Login facebook', false)
-              }
-              />
-            
-            <br /><br />
-            After copying the URL, you can paste it in the textbox below and we will parse your FB token from it.
-            
-            <TextField 
-              ref="fbAccessToken"
-              floatingLabelText="Paste URL here"
-              style={{width: '100%'}}
-              errorText={this.state.facebookAccessTokenDialogErrorText}
-              onChange={() => this.setState({facebookAccessToken: this.refs.fbAccessToken.getValue()})}
-              />
             
           </Dialog>
-          
+
           <Dialog
             open={this.state.aboutDialogOpen}
             actions={aboutDialogActions}
@@ -326,15 +298,15 @@ class Main extends Component {
             <h2>What is Tinderface?</h2>
             Tinderface is a web app that lets you see the Tinder profiles of your Facebook friends who are opted-in to Tinder Social.
             <h2>How does Tinderface work?</h2>
-            Tinderface utilizes Tinder's private API to retrieve information that the Tinder client already receives and uses it to present a UI
+            Tinderface utilizes Tinder’s private API to retrieve information that the Tinder client already receives and uses it to present a UI
             for the user to interact with. The Tinder  profile on Tinderface will show the user’s biography, photos, distance away, and best of all:
             when they were last active, which was actually removed from the Tinder app, but their API still sends the timestamp.
-            <h2>Can I see all of my Facebook friend's Tinder profiles?</h2>
+            <h2>Can I see all of my Facebook friend’s Tinder profiles?</h2>
             No, you can only see the Tinder profiles of your Facebook friends who have explicitly opted-in to Tinder Social. 
             <h2>Will Tinderface hack me?</h2>
             Tinderface does not save any information about you. We simply use your Facebook Access Token to fetch your Tinder authentication token
             so that we can automate API requests. We do not save your Facebook or Tinder tokens. You can view the source on GitHub and run the app yourself
-            if you're paranoid.
+            if you’re paranoid.
           </Dialog>
           
           <div style={styles.header}>
