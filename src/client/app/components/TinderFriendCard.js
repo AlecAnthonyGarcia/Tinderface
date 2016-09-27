@@ -185,7 +185,7 @@ class TinderFriendCard extends React.Component {
           </CardText>
           
           <CardActions expandable={true}>
-            <FlatButton label="SHARE" onTouchTap={this.getTinderShareUrl.bind(this)} />
+            <FlatButton label="{"RECOMMEND " + headerTitle.split(' ')[0]} style={{width: '100%', color: '#fd5068'}}" onTouchTap={this.getTinderShareUrl.bind(this)} />
           </CardActions>
         </Card>
       );
