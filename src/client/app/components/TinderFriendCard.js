@@ -124,8 +124,19 @@ class TinderFriendCard extends React.Component {
     } = this.props;
     
     var profileImage = image;
+    var job;
+    var school;
+    var lastActive = "";
     if(Object.keys(this.state.tinderUserObject).length > 0) {
       profileImage = this.state.tinderUserObject.photos[0]["processedFiles"][0]["url"];
+      if(this.state.tinderUserObject.jobs[0]) {
+        job = this.state.tinderUserObject.jobs[0]["company"]["name"];
+      }
+      if(this.state.tinderUserObject.schools[0]) {
+        school = this.state.tinderUserObject.schools[0]["name"];
+      }
+      lastActive = this.state.tinderUserObject.distance_mi + ((this.state.tinderUserObject.distance_mi === 1) ? ' mile' : ' miles') + ' away'
+      + ' Active ' + moment(this.state.tinderUserObject.ping_time).fromNow();
     }
     
     return (
@@ -146,9 +157,16 @@ class TinderFriendCard extends React.Component {
         </CardMedia>
         <CardTitle 
           title={headerTitle.split(' ')[0] + ", " + moment().diff(this.state.tinderUserObject.birth_date, 'years')}
-          subtitle={this.state.tinderUserObject.distance_mi + ((this.state.tinderUserObject.distance_mi === 1) ? ' mile' : ' miles') + ' away'
-            + ' Active ' +  moment(this.state.tinderUserObject.ping_time).fromNow()}
-            expandable={true} />
+          subtitle={
+            <div>
+              <span>{job}</span>
+              {(job) ? <br></br> : ''}
+              <span>{school}</span>
+              {(school) ? <br></br> : ''}
+              <span>{lastActive}</span>
+            </div>
+          }
+          expandable={true} />
           <CardText expandable={true}>
             {this.state.tinderUserObject.bio}
             
