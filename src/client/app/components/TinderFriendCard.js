@@ -52,6 +52,44 @@ class TinderFriendCard extends React.Component {
     xhr.send(formData);
   }
   
+  swipeOnUser(swipeType) {
+    var tinderAuthToken = localStorage.getItem('tinderAuthToken');
+    if(tinderAuthToken != null) {
+      var itself = this;
+      var xhr = new XMLHttpRequest();
+      
+      xhr.onreadystatechange = function() {
+        if (xhr.readyState == XMLHttpRequest.DONE) {
+          if(xhr.status == 200) {
+            var response = JSON.parse(xhr.responseText);
+            if(response.error) {
+              console.log('Invalid Facebook Access Token.');
+            } else {
+              if(response.likes_remaining == 0) {
+                alert("You're Out of Likes!\nGet more likes " + moment(response.rate_limited_until).from(moment()));
+              } else if(response.match) {
+                alert("It's a match!");
+              } else {
+                alert("Swiped " + ((swipeType == "pass") ? "left" : "right") + " on " + itself.props.headerTitle.split(' ')[0] + "!");
+              }
+            }
+          } else {
+            console.log('Error swiping on Tinder user.');
+          }
+        }
+      }
+      
+      var formData = new FormData();
+      formData.append("tinderAuthToken", tinderAuthToken);
+      formData.append("tinderUserId", this.props.userId);
+      formData.append("swipeType", swipeType);
+      
+      // make internal server request to swipe on the the Tinder user
+      xhr.open("POST", './swipe', true);
+      xhr.send(formData);
+    }
+  }
+  
   // reuse request for user profile, but get share link
   getTinderShareUrl() {
     var tinderAuthToken = localStorage.getItem('tinderAuthToken');
@@ -185,8 +223,14 @@ class TinderFriendCard extends React.Component {
           </CardText>
           
           <CardActions expandable={true}>
-            <FlatButton label="{"RECOMMEND " + headerTitle.split(' ')[0]} style={{width: '100%', color: '#fd5068'}}" onTouchTap={this.getTinderShareUrl.bind(this)} />
+            <FlatButton label={"RECOMMEND " + headerTitle.split(' ')[0]} style={{width: '100%', color: '#fd5068'}} onTouchTap={this.getTinderShareUrl.bind(this)} />
           </CardActions>
+          
+          <div className="swipeActionContainer" expandable={true}>
+            <div className="swipeActionLeft"><img className="swipeActionButton" src={"pass.png"} onClick={() => this.swipeOnUser('pass')}/></div>
+            <div className="swipeActionCenter"><img className="swipeActionButton" style={{visibility: 'hidden'}} src={"superlike.png"} /></div>
+            <div className="swipeActionRight"><img className="swipeActionButton" src={"like.png"} onClick={() => this.swipeOnUser('like')}/></div>
+          </div>
         </Card>
       );
     }

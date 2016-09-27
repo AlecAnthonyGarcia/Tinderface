@@ -8,3 +8,34 @@ body {
   font-size: 13px;
   line-height: 20px;
 }
+
+.swipeActionContainer {
+  width:100%;
+  text-align:center;
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+
+.swipeActionLeft {
+  float:left;
+  width:100px;
+  height: 20px;
+}
+
+.swipeActionCenter {
+  display: inline-block;
+  margin:0 auto;
+  width:100px;
+  height: 20px;
+}
+
+.swipeActionRight {
+  float:right;
+  width:100px;
+  height: 20px;
+}
+
+.swipeActionButton {
+  width: 48px;
+  cursor: pointer;
+}

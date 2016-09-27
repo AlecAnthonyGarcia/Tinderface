@@ -100,4 +100,18 @@ app.post('/group/status', upload.array(), function (req, res) {
   });
 });
 
+// swipe left (pass) or right (like) on the requested user
+app.post('/swipe', upload.array(), function (req, res) {
+  request({
+    url: TINDER_API + "/" + req.body.swipeType + "/" + req.body.tinderUserId,
+    method: "GET",
+    headers: {
+      "User-Agent": "Tinder/5.3.1 (iPhone; iOS 9.3.3; Scale/2.00)",
+      "X-Auth-Token": req.body.tinderAuthToken
+    },
+  }, function (error, response, body){
+    res.send(body);
+  });
+});
+
 module.exports = app;
