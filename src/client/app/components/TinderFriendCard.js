@@ -13,7 +13,8 @@ class TinderFriendCard extends React.Component {
     this.state = {
       expanded: false,
       tinderUserObject: {},
-      tinderShareUrl: ''
+      tinderShareUrl: '',
+      commonLikesArray: []
     };
   }
   
@@ -30,6 +31,7 @@ class TinderFriendCard extends React.Component {
           } else {
             if(response.results) {
               itself.setState({tinderUserObject: response.results});
+              itself.generateCommonLikes(itself.state.tinderUserObject.common_likes);
             } else if(response.link) {
               itself.setState({tinderShareUrl: response.link});
             }
@@ -90,12 +92,31 @@ class TinderFriendCard extends React.Component {
     }
   }
   
+  // generate a list of likes that both you and the current user have in common
+  generateCommonLikes(commonLikes) {
+    var itself = this;
+    var commonLikesArray = [];
+    commonLikes.map((commonLikeId) => {
+      var commonLikeName = itself.props.getCommonLikeNameById(commonLikeId);
+      commonLikesArray.push({
+        id: commonLikeId,
+        name: commonLikeName
+      });
+    });
+    this.setState({commonLikesArray: commonLikesArray});
+  }
+  
   // reuse request for user profile, but get share link
   getTinderShareUrl() {
     var tinderAuthToken = localStorage.getItem('tinderAuthToken');
     if(tinderAuthToken != null) {
       this.getTinderUserProfile(tinderAuthToken, this.props.userId, true);
     }
+  }
+  
+  // open the Facebook page for the corresponding interest/like
+  onCommonLikeTap(commonLikeId) {
+    window.open("https://www.facebook.com/" + commonLikeId);
   }
   
   handleExpandChange (expanded) {
@@ -221,6 +242,20 @@ class TinderFriendCard extends React.Component {
             }
             
           </CardText>
+          
+          {this.state.commonLikesArray.length > 0 ?
+            <div style={{padding: '10px'}}>
+              <p>{this.state.commonLikesArray.length} Interest{(this.state.commonLikesArray.length) > 1 ? "s" : ''}</p>
+              {this.state.commonLikesArray.map((commonLike) => (
+                <FlatButton
+                  label={commonLike.name}
+                  style={{color: '#fd5068', border: '1px solid', borderRadius: '5px', margin: '3px'}}
+                  labelStyle={{textTransform: 'none'}}
+                  onTouchTap={() => this.onCommonLikeTap(commonLike.id)} />
+              ))}
+            </div>
+            : ''
+          }
           
           <CardActions expandable={true}>
             <FlatButton label={"RECOMMEND " + headerTitle.split(' ')[0]} style={{width: '100%', color: '#fd5068'}} onTouchTap={this.getTinderShareUrl.bind(this)} />

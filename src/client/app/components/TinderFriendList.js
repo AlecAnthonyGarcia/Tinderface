@@ -29,6 +29,7 @@ class TinderFriendList extends React.Component {
     this.state = {
       tinderFriendArray: [],
       tinderUserObject: {},
+      tinderUserLikesMap: {},
       tinderGroupObject: {},
       editGroupStatusDialogOpen: false,
       editGroupStatusDialogErrorText: '',
@@ -133,6 +134,7 @@ class TinderFriendList extends React.Component {
                 tinderGroupStatusText: group.status
               });
             }
+            itself.generateUserLikesMap(itself.state.tinderUserObject.interests);
           }
         } else {
           console.log('Error requesting Tinder information for the user.');
@@ -196,6 +198,21 @@ class TinderFriendList extends React.Component {
     // make internal server request to the user's information from Tinder's API
     xhr.open("POST", './group/status', true);
     xhr.send(formData);
+  }
+  
+  // map the id of each user's interest/like to its name
+  generateUserLikesMap(likes) {
+    likes.map((like) => {
+      this.state.tinderUserLikesMap[like.id] = like.name;
+    });
+  }
+  
+  // return the name of the interest/like by its id
+  getCommonLikeNameById(likeId) {
+    if(likeId in this.state.tinderUserLikesMap) {
+      return this.state.tinderUserLikesMap[likeId];
+    }
+    return null;
   }
   
   render() {
@@ -266,6 +283,7 @@ class TinderFriendList extends React.Component {
             headerAvatar={card.photo[0]["processedFiles"][0]["url"]}
             image={card.photo[0]["processedFiles"][2]["url"]}
             text={card.text}
+            getCommonLikeNameById={(likeId) => this.getCommonLikeNameById(likeId)}
             />
         ))}
         
