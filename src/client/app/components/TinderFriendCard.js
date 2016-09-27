@@ -244,7 +244,7 @@ class TinderFriendCard extends React.Component {
           </CardText>
           
           {this.state.commonLikesArray.length > 0 ?
-            <div style={{padding: '10px'}}>
+            <div style={{padding: '10px'}} expandable={true}>
               <p>{this.state.commonLikesArray.length} Interest{(this.state.commonLikesArray.length) > 1 ? "s" : ''}</p>
               {this.state.commonLikesArray.map((commonLike) => (
                 <FlatButton
