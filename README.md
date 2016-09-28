@@ -1,6 +1,6 @@
 <img src="https://cloud.githubusercontent.com/assets/2003684/17205864/b61e53c6-5461-11e6-937d-02a63c2d20e2.png" width="275"/>
-<img src="https://cloud.githubusercontent.com/assets/2003684/17205862/b6037ede-5461-11e6-9376-9bb52cac3664.png" width="275"/>
-<img src="https://cloud.githubusercontent.com/assets/2003684/17205863/b614e0fc-5461-11e6-9b88-b591a5005d0a.png" width="275"/>
+<img src="https://cloud.githubusercontent.com/assets/2003684/18899074/3db64032-84eb-11e6-9c8a-b9b3d7a936d8.png" width="275"/>
+<img src="https://cloud.githubusercontent.com/assets/2003684/18899100/6880285a-84eb-11e6-848a-a2ce7f31359e.png" width="275"/>
 
 ### What is Tinderface?
 Tinderface is a web app that lets you see the Tinder profiles of your Facebook friends who are opted-in to Tinder Social.
